@@ -332,14 +332,11 @@ img {
 
 
          //control button 
-          
-         $("#colorPicker").on('click touch', function () {
-             console.log("clicked");
-            
-             color = document.getElementById("colorPicker").value;
+          $('#colorPicker').on('change', function () {
+             color = $(this).val();
              ctx.strokeStyle = color;
-             console.log("color: "+color);
          });
+         
          $(".paint-all").on('click touch', function () {
              $("canvas").css("background-color", color);
              bgColor = color;
