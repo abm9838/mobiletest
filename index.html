@@ -331,11 +331,12 @@ img {
          }
 
 
+          
          //control button 
-          $('#colorPicker').on('change', function () {
+         $('#colorPicker').on('change', function () {
              color = $(this).val();
              ctx.strokeStyle = color;
-	     isPen = true;
+             isPen = true;
              $('.eImg').attr('src', 'eraser.png'); 
          });
          
