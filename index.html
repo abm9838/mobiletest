@@ -335,6 +335,8 @@ img {
           $('#colorPicker').on('change', function () {
              color = $(this).val();
              ctx.strokeStyle = color;
+	     isPen = true;
+             $('.eImg').attr('src', 'eraser.png'); 
          });
          
          $(".paint-all").on('click touch', function () {
