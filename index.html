@@ -130,7 +130,7 @@ button {
 
 img {
     height: 100%;
-    width: 25%;
+    width: 80%;
 }
 
 .slider {
@@ -191,6 +191,7 @@ img {
             <button class="reset"><img src="reset.png" /></button>
             <button class="eraser"><img class="eImg" src="eraser.png" /></button>
             <button class="paint-all"><img src="fillColor.png" /></button>
+	    <button><a id="downloadLnk" download="YourFileName.jpg"><img src="file.png" style="height:100%; width:80%" /></a></button>
 
         </div>
        
@@ -253,7 +254,11 @@ img {
 		
      $(document).ready(function () {
         // get references to the canvas element as well as the 2D drawing ctx
-         
+         function download() {
+			var dt = canvas.toDataURL('Pictures/jpeg');
+			this.href = dt;
+		};
+		downloadLnk.addEventListener('click', download, false);
  
          if (is_touch_device) {
             // create a drawer which tracks touch movements
