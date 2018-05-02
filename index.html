@@ -259,11 +259,14 @@ img {
 		 function download() {
 			count++;
 			var fileName=prompt("<b>Save as : ","myPaint"+count);
-			if(fileName!=null){
+			if(fileName == null){
 				console.log("name : "+fileName);
-			downloadLnk.download=fileName+".jpg";
-			var dt = canvas.toDataURL('Pictures/jpeg');
-			this.href = dt;
+			}
+			else {
+				console.log("else : "+fileName);
+				downloadLnk.download=fileName+".jpg";
+				var dt = canvas.toDataURL('Pictures/jpeg');
+				this.href = dt;
 			}
 			
 		};
