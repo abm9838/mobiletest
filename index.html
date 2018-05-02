@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-   <meta charset="utf-8" />
-   <title>Paint Your Dream</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <title>Upload Canvas</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-   <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>-->
-	<script type="text/javascript" src="jquery-3.3.1.js"></script>
+   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
    <style>
        * {
            margin: 0;
@@ -21,7 +20,6 @@
                background-color: #F09A9D; /* Red */
            }
        }
-
        /* Tablet Styles */
        @media only screen and (min-width: 401px) and (max-width: 960px) {
            body {
@@ -34,12 +32,10 @@
                background-color: #B2D6FF; /* Blue */
            }
        }
-
        .page {
            display: flex;
            flex-wrap: wrap;
        }
-
        .section {
            width: 100%;
            height: auto;
@@ -62,16 +58,14 @@
                height: 25px;
            }
        }
-	   @media screen and (orientation:landscape) and (max-width: 400px) {
+       @media screen and (orientation:landscape) and (max-width: 400px) {
            .slidecontainer,
            .tools {
                width: 50%;
            }
-
            .button-tool {
                width: 100%;
            }
-
            .slidecontainer,
            .button-tool,
            .tools {
@@ -96,7 +90,6 @@
        }
        /* Desktop Styles */
        @media only screen and (min-width: 961px) {
-
            .slidecontainer{
                width:45%;
            }
@@ -112,12 +105,10 @@
                height: 35px;
            }
        }
-
 #colorPicker{ padding:0px;
               height:100%;
               width:100%;
               
-
 }
 canvas {
 background:black;
@@ -127,54 +118,57 @@ button {
     width: 25%;
     background:none;
 }
-
 img {
     height: 100%;
     width: 80%;
 }
-
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+}
 .slider {
     -webkit-appearance: none;
     width: 100%;
-    height: 10px;
+    
     border-radius: 5px;
-    background: #d3d3d3;
     outline: none;
     opacity: 0.7;
     -webkit-transition: .2s;
     transition: opacity .2s;
     
 }
-
 .slider:hover {
     opacity: 1;
 }
-
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    background: #4CAF50;
+    background:green;
     cursor: pointer;
+	border:2px solid;
 }
-
 .slider::-moz-range-thumb {
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    background: #4CAF50;
+    background:green;
     cursor: pointer;
+	border:2px solid white;
 }
- .copy {
+.copy {
     position: fixed;
     bottom: 2px;
     width: 240px;
     color:darkgreen;
-     font-size:xx-small;
+    font-size:xx-small;
 }
-   
    
    </style>
    
@@ -191,10 +185,9 @@ img {
             <button class="reset"><img src="reset.png" /></button>
             <button class="eraser"><img class="eImg" src="eraser.png" /></button>
             <button class="paint-all"><img src="fillColor.png" /></button>
-	    <button><a id="downloadLnk" download="YourFileName.jpg"><img src="file.png" style="height:100%; width:80%" /></a></button>
-
+			<button><a id="downloadLnk" download="YourFileName.jpg"><img src="file.png" /></a></button>
         </div>
-       
+
         <div class="button-tool section">
             <button class="b1" style="background-color:red; width:6.66%"></button>
             <button class="b2" style="background-color:green; width:6.66%"></button>
@@ -211,22 +204,23 @@ img {
             <button class="b13" style="background-color:aqua; width:6.66%"></button>
             <button class="b14" style="background-color:turquoise; width:6.66%"></button>
             <button class="b15" style="background-color:olive; width:6.66%"></button>
+			
 
         </div>
         <div id="canvasDiv section">
             <!-- It's bad practice (to me) to put your CSS here.  I'd recommend the use of a CSS file! -->
-            <canvas id="canvasSignature" height="100%"></canvas>
+            <canvas id="canvasSignature" height="100%" ></canvas>
         </div>
-	 <div class="copy"><label>abhay maurya &copy;2018</label></div>
-    </div>
-   
-
+		
 </body>
    <script type="text/javascript">
-    
+	   var undoPoints=[];
+	   var redoPoints=[];
+	   var brushSize=10;
+	   var count=0;
        var color = '#ff0000';
        var bgColor = '#000000';
-       var preColor = color;
+       var preColor = '#ffffff';
        var isPen = true;
 		var slider = document.getElementById("myRange");
 		var output = document.getElementById("demo");
@@ -242,19 +236,31 @@ img {
 		ctx.lineJoin = 'round';
 		ctx.lineCap = 'round';
 		ctx.lineWidth = 10;
-        
+        updateBar();
          // This will be defined on a TOUCH device such as iPad or Android, etc.
         var is_touch_device = 'ontouchstart' in document.documentElement;
 		 
 		//output.innerHTML = slider.value;
+		
 		slider.oninput = function() {
 		    //output.innerHTML = this.value;
-		    ctx.lineWidth = this.value; }
+			brushSize=this.value;
+		    ctx.lineWidth = this.value; 
+			updateBar();
+			
+				
+			
+			}
+	/*
 		
-		
+*/
      $(document).ready(function () {
         // get references to the canvas element as well as the 2D drawing ctx
-         function download() {
+		 function download() {
+			count++;
+			var fileName=prompt("<b>Save as : ","myPaint"+count);
+			console.log("name : "+fileName);
+			downloadLnk.download=fileName+".jpg";
 			var dt = canvas.toDataURL('Pictures/jpeg');
 			this.href = dt;
 		};
@@ -264,24 +270,31 @@ img {
             // create a drawer which tracks touch movements
             var drawer = {
                isDrawing: false,
-               touchstart: function (coors) {
+               touchstart: function (position) {
                   ctx.beginPath();
-                  ctx.moveTo(coors.x, coors.y);
+                  ctx.moveTo(position.x, position.y);
                   this.isDrawing = true;
+				  undoPoints.push({x:position.x,y:position.y,size:brushSize,color:color,mode:"begin"});
+      
                },
-               touchmove: function (coors) {
+               touchmove: function (position) {
                   if (this.isDrawing) {
-                     ctx.lineTo(coors.x, coors.y);
+                     ctx.lineTo(position.x, position.y);
                      ctx.stroke();
-					
+					undoPoints.push({x:position.x,y:position.y,size:brushSize,color:color,mode:"draw"});
+      
 					 
                   }
                },
-               touchend: function (coors) {
+               touchend: function (position) {
                   if (this.isDrawing) {
-                     this.touchmove(coors);
+                     this.touchmove(position);
                      this.isDrawing = false;
+					 
                   }
+				  console.log("touch end");
+					 undoPoints.push({x:position.x,y:position.y,size:brushSize,color:color,mode:"end"});
+      
                }
 			   
             };
@@ -290,9 +303,12 @@ img {
             function draw(event) {
  
                // get the touch coordinates.  Using the first touch in case of multi-touch
-               var coors = {
+               var position = {
                   x: event.targetTouches[0].pageX,
                   y: event.targetTouches[0].pageY
+				  
+				  //x: event.changedTouches[0].pageX
+				  //y: event.changedTouches[0].pageY
                };
  
                // Now we need to get the offset of the canvas location
@@ -301,8 +317,8 @@ img {
                if (obj.offsetParent) {
                   // Every time we find a new object, we add its offsetLeft and offsetTop to curleft and curtop.
                   do {
-                     coors.x -= obj.offsetLeft;
-                     coors.y -= obj.offsetTop;
+                     position.x -= obj.offsetLeft;
+                     position.y -= obj.offsetTop;
                   }
 				  // The while loop can be "while (obj = obj.offsetParent)" only, which does return null
 				  // when null is passed back, but that creates a warning in some editors (i.e. VS2010).
@@ -310,7 +326,7 @@ img {
                }
  
                // pass the coordinates to the appropriate handler
-               drawer[event.type](coors);
+               drawer[event.type](position);
             }
  
             // attach the touchstart, touchmove, touchend event listeners.
@@ -332,7 +348,8 @@ img {
  
                ctx.moveTo(position.X, position.Y);
                ctx.beginPath();
-			
+			   undoPoints.push({x:position.X,y:position.Y,size:brushSize,color:color,mode:"begin"});
+      
                // attach event handlers
                $(this).mousemove(function (mouseEvent) {
                   drawLine(mouseEvent, canvas, ctx);
@@ -344,17 +361,22 @@ img {
             });
  
          }
-
-
-          
+		
+		
          //control button 
          $('#colorPicker').on('change', function () {
+			preColor=color;
              color = $(this).val();
              ctx.strokeStyle = color;
              isPen = true;
+			 console.log("color changed");
              $('.eImg').attr('src', 'eraser.png'); 
+			 updateBar();
          });
          
+         
+		 
+		 
          $(".paint-all").on('click touch', function () {
              $("canvas").css("background-color", color);
              bgColor = color;
@@ -364,13 +386,15 @@ img {
              $("canvas").css("background-color", 'black');
              color = '#ff0000';
              bgColor = '#000000';
-             preColor = color;
+             preColor = 'green';
              isPen = true;
              $('.eImg').attr('src', 'eraser.png');
              ctx.clearRect(0, 0, canvas.width, canvas.height);
-	     ctx.strokeStyle = '#ff0000';
+             ctx.strokeStyle = '#ff0000';
+			 undoPoints=[];
+			 redoPoints=[];
+			 updateBar();
          });
-
          $(".eraser").on('click touch', function () {
              
             if (isPen) {
@@ -388,28 +412,28 @@ img {
                 $('.eImg').attr('src', 'eraser.png');
                 console.log("pen");
             }
-
          });
-
          
-         $(".b1").on('click touch', function () { preColor = color; color = "#ff0000"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//red
-         $(".b2").on('click touch', function () { preColor = color; color = "#008000"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//green
-         $(".b3").on('click touch', function () { preColor = color; color = "#FFFF00"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//yellow
-         $(".b3").on('click touch', function () { preColor = color; color = "#FFFF00"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//yellow
-         $(".b4").on('click touch', function () { preColor = color; color = "#0000FF"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//blue
-         $(".b5").on('click touch', function () { preColor = color; color = "#A52A2A"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//brown
-         $(".b6").on('click touch', function () { preColor = color; color = "#FFFFFF"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//white
-         $(".b7").on('click touch', function () { preColor = color; color = "#000000"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//black
-         $(".b8").on('click touch', function () { preColor = color; color = "#FFA500"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//orange
-         $(".b9").on('click touch', function () { preColor = color; color = "#808080"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//gray
-         $(".b10").on('click touch', function () { preColor = color; color = "#00FF00"; ctx.strokeStyle = color;isPen = true; $('.eImg').attr('src', 'eraser.png'); });//lime
-         $(".b11").on('click touch', function () { preColor = color; color = "#FFD700"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//gold
-         $(".b12").on('click touch', function () { preColor = color; color = "#FFC0CB"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//pink
-         $(".b13").on('click touch', function () { preColor = color; color = "#00FFFF"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//aqva
-         $(".b14").on('click touch', function () { preColor = color; color = "#40E0D0"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//tuwquoise
-         $(".b15").on('click touch', function () { preColor = color; color = " #808000"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); });//olive
-
+         $(".b1").on('click touch', function () { preColor = color; color = "#ff0000"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//red
+         $(".b2").on('click touch', function () { preColor = color; color = "#008000"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//green
+         $(".b3").on('click touch', function () { preColor = color; color = "#FFFF00"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar(); });//yellow
+         $(".b3").on('click touch', function () { preColor = color; color = "#FFFF00"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//yellow
+         $(".b4").on('click touch', function () { preColor = color; color = "#0000FF"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//blue
+         $(".b5").on('click touch', function () { preColor = color; color = "#A52A2A"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//brown
+         $(".b6").on('click touch', function () { preColor = color; color = "#FFFFFF"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//white
+         $(".b7").on('click touch', function () { preColor = color; color = "#000000"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//black
+         $(".b8").on('click touch', function () { preColor = color; color = "#FFA500"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//orange
+         $(".b9").on('click touch', function () { preColor = color; color = "#808080"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//gray
+         $(".b10").on('click touch', function () { preColor = color; color = "#00FF00"; ctx.strokeStyle = color;isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//lime
+         $(".b11").on('click touch', function () { preColor = color; color = "#FFD700"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//gold
+         $(".b12").on('click touch', function () { preColor = color; color = "#FFC0CB"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//pink
+         $(".b13").on('click touch', function () { preColor = color; color = "#00FFFF"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//aqva
+         $(".b14").on('click touch', function () { preColor = color; color = "#40E0D0"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//tuwquoise
+         $(".b15").on('click touch', function () { preColor = color; color = " #808000"; ctx.strokeStyle = color; isPen = true; $('.eImg').attr('src', 'eraser.png'); updateBar();});//olive
+		
+	
       });
+	  
  
       // works out the X, Y position of the click inside the canvas from the X, Y position on the page
       function getPosition(mouseEvent, canvas) {
@@ -433,6 +457,8 @@ img {
          var position = getPosition(mouseEvent, canvas);
  
          ctx.lineTo(position.X, position.Y);
+		 undoPoints.push({x:position.X,y:position.Y,size:brushSize,color:color,mode:"draw"});
+      
          ctx.stroke();
       }
  
@@ -442,7 +468,9 @@ img {
       function finishDrawing(mouseEvent, canvas, ctx) {
          // draw the line to the finishing coordinates
          drawLine(mouseEvent, canvas, ctx);
- 
+		 var position = getPosition(mouseEvent, canvas);
+		undoPoints.push({x:position.X,y:position.Y,size:brushSize,color:color,mode:"end"});
+      
          ctx.closePath();
  
          // unbind any events which could draw
@@ -450,5 +478,25 @@ img {
                      .unbind("mouseup")
                      .unbind("mouseout");
       }
-   </script>
+	  
+	  function updateBar(){
+				
+				var newStyles = document.createElement('style')
+				document.head.append(newStyles)
+				if ((preColor=='#FFFFFF') && (color=='#FFFFFF')){ 
+						console.log("equal");
+						newStyles.innerHTML =".slider::-webkit-slider-thumb {" +
+							" border: black ;} " ;	}
+				else{ newStyles.innerHTML =".slider::-webkit-slider-thumb {" +
+							" border: white ;} " ;
+				}
+				newStyles.innerHTML = ".slider::-webkit-slider-thumb {" +
+				  " background:"+preColor +";"+
+				"}" +".slider{" +
+				  "height:" +slider.value+";}"+
+				  ".slider {" +
+				  "background :"+ color +";}"
+			}
+	  
+	   </script>
 </html> 
