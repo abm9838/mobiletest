@@ -258,7 +258,7 @@ img {
         // get references to the canvas element as well as the 2D drawing ctx
 		 function download() {
 			count++;
-			var fileName=prompt("<b>Save as : ","myPaint"+count);
+			var fileName=prompt("Save as : ","myPaint"+count);
 			console.log("name : "+fileName);
 			downloadLnk.download=fileName+".jpg";
 			var dt = canvas.toDataURL('Pictures/jpeg');
